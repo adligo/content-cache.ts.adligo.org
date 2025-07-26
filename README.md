@@ -62,6 +62,35 @@ The primary use case of the Content Cache Server will be to host content after i
      └──────────────┘           └───┘          └──────────────┘           └───────────┘          └─────────┘          └─────────────┘
 ```
 
+#### High Availability
+Multiple deployments of the Content Cache Server can then provide redundancy with monitored DNS round robins from DNS hosting services like Dyn or Dns Made Easy.
+
+```
+     ┌───────────────┐          ┌──────────┐           ┌───────────────┐          ┌────────────────┐           ┌────────────────┐
+     │ContentClient_1│          │DnsServers│           │ContentClient_2│          │CacheServerXYZ_1│           │CacheServerXYZ_2│
+     └───────┬───────┘          └─────┬────┘           └───────┬───────┘          └────────┬───────┘           └────────┬───────┘
+             │  FindCacheServerXYZ    │                        │                           │                            │        
+             │───────────────────────>│                        │                           │                            │        
+             │                        │                        │                           │                            │        
+             │                        │  FindCacheServerXYZ    │                           │                            │        
+             │                        │<───────────────────────│                           │                            │        
+             │                        │                        │                           │                            │        
+             │                        │         GetFileA       │                           │                            │        
+             │────────────────────────────────────────────────────────────────────────────>│                            │        
+             │                        │                        │                           │                            │        
+             │                        │       ProvideFileA     │                           │                            │        
+             │<────────────────────────────────────────────────────────────────────────────│                            │        
+             │                        │                        │                           │                            │        
+             │                        │                        │                       GetFileA                         │        
+             │                        │                        │───────────────────────────────────────────────────────>│        
+             │                        │                        │                           │                            │        
+             │                        │                        │                     ProvideFileA                       │        
+             │                        │                        │<───────────────────────────────────────────────────────│        
+     ┌───────┴───────┐          ┌─────┴────┐           ┌───────┴───────┐          ┌────────┴───────┐           ┌────────┴───────┐
+     │ContentClient_1│          │DnsServers│           │ContentClient_2│          │CacheServerXYZ_1│           │CacheServerXYZ_2│
+     └───────────────┘          └──────────┘           └───────────────┘          └────────────────┘           └────────────────┘
+```
+
 ## Features
 configurable disk and memory caching 
 configurable storage (i.e. local, or cloud Azure, AWS, GCP)
