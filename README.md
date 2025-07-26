@@ -7,6 +7,61 @@ It will be designed to facilitate pull, cache as a proxy, or have content pushed
 ## Architecture 
 A modular architecture will provide a wide range of Use-Cases, including hosting on different clouds.   
 
+#### Basic Cache
+Although this server will be able to be used as a basic cache, as follows, this is NOT the primary Use-Case!
+
+```
+     ┌───────────┐          ┌─────────┐          ┌─────────────┐          ┌───┐
+     │CacheServer│          │LocalDisk│          │ContentClient│          │AEM│
+     └─────┬─────┘          └────┬────┘          └──────┬──────┘          └─┬─┘
+           │     LoadConfig      │                      │                   │  
+           │────────────────────>│                      │                   │  
+           │                     │                      │                   │  
+           │                 GetFileA                   │                   │  
+           │<───────────────────────────────────────────│                   │  
+           │                     │                      │                   │  
+           │                     │     GetFileA         │                   │  
+           │───────────────────────────────────────────────────────────────>│  
+           │                     │                      │                   │  
+           │               ProvideFileA                 │                   │  
+           │───────────────────────────────────────────>│                   │  
+           │                     │                      │                   │  
+           │     StoreFileA      │                      │                   │  
+           │────────────────────>│                      │                   │  
+     ┌─────┴─────┐          ┌────┴────┐          ┌──────┴──────┐          ┌─┴─┐
+     │CacheServer│          │LocalDisk│          │ContentClient│          │AEM│
+     └───────────┘          └─────────┘          └─────────────┘          └───┘
+```
+
+#### Curated Cache
+The primary use case of the Content Cache Server will be to host content after it's curated as follows;
+
+```
+     ┌──────────────┐           ┌───┐          ┌──────────────┐           ┌───────────┐          ┌─────────┐          ┌─────────────┐
+     │ContentCreator│           │AEM│          │ContentCurator│           │CacheServer│          │LocalDisk│          │ContentClient│
+     └───────┬──────┘           └─┬─┘          └───────┬──────┘           └─────┬─────┘          └────┬────┘          └──────┬──────┘
+             │    CreateFileA     │                    │                        │                     │                      │       
+             │───────────────────>│                    │                        │                     │                      │       
+             │                    │                    │                        │                     │                      │       
+             │                    │     ViewFileA      │                        │                     │                      │       
+             │                    │<───────────────────│                        │                     │                      │       
+             │                    │                    │                        │                     │                      │       
+             │                    │                    │     PublishFileA       │                     │                      │       
+             │                    │                    │───────────────────────>│                     │                      │       
+             │                    │                    │                        │                     │                      │       
+             │                    │                    │                        │     StoreFileA      │                      │       
+             │                    │                    │                        │────────────────────>│                      │       
+             │                    │                    │                        │                     │                      │       
+             │                    │                    │                        │                 GetFileA                   │       
+             │                    │                    │                        │<───────────────────────────────────────────│       
+             │                    │                    │                        │                     │                      │       
+             │                    │                    │                        │               ProvideFileA                 │       
+             │                    │                    │                        │───────────────────────────────────────────>│       
+     ┌───────┴──────┐           ┌─┴─┐          ┌───────┴──────┐           ┌─────┴─────┐          ┌────┴────┐          ┌──────┴──────┐
+     │ContentCreator│           │AEM│          │ContentCurator│           │CacheServer│          │LocalDisk│          │ContentClient│
+     └──────────────┘           └───┘          └──────────────┘           └───────────┘          └─────────┘          └─────────────┘
+```
+
 ## Features
 configurable disk and memory caching 
 configurable storage (i.e. local, or cloud Azure, AWS, GCP)
